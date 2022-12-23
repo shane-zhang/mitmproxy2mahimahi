@@ -24,10 +24,10 @@ from mitmproxy import version
 from mitmproxy.utils import strutils
 from mitmproxy.net.http import status_codes
 
-
-import errno    
 import os
 
+
+ip_set = set()
 
 def mkdir_p(path):
     try:
@@ -47,10 +47,16 @@ def getCode(length = 10, char = string.ascii_uppercase +
 
 PARAMS={}
 
+def load(loader):
+    print ("Start the Script")
+    os.system("tshark -f \"not port 22\" -w test.pcap&")
+
 def start():
     """
         Called once on script startup before any other events.
     """
+    sys.argv.append("test")
+    print (sys.argv)
     if len(sys.argv) != 2:
         raise ValueError(
             'Usage: -s "mahimahidump.py directory" '
@@ -79,11 +85,17 @@ def response(flow):
     ssl_time = -1
     connect_time = -1
 
+    if "ListAccounts?gpsia" in  flow.request.url:
+        return
+
     reqresp = mahi_pb2.RequestResponse()
     scheme = mahi_pb2.RequestResponse.HTTPS if flow.request.url.lower().startswith('https://') else mahi_pb2.RequestResponse.HTTP
     reqresp.scheme = scheme
-    reqresp.ip = flow.server_conn.ip_address.host
-    reqresp.port = flow.server_conn.ip_address.port
+    
+    reqresp.ip = flow.server_conn.ip_address[0]
+    reqresp.port = flow.server_conn.ip_address[1]
+
+    ip_set.add(reqresp.ip)
 
     #reqresp.request = mahi_pb2.HTTPMessage()
     first_line = bytes(flow.request.method + " "+flow.request.path+" HTTP/1.1",'utf-8')
@@ -97,7 +109,6 @@ def response(flow):
 
     status_code = flow.response.status_code
     reqresp.response.first_line = bytes("HTTP/1.1 "+str(status_code)+" "+status_codes.RESPONSES.get(status_code, ""),'utf-8')
-        
 
     for k,v in flow.response.headers.items():
         if k.lower() == "transfer-encoding" and 'chunked' in v.lower():
@@ -111,7 +122,9 @@ def response(flow):
         reqresp.response.body = bytes('','utf-8')
 
 
+
     qotationmark = str(first_line).find('?')
+
     if qotationmark == -1:
         filename_hash = calcMahimahiHash(first_line)
     else:
@@ -119,11 +132,17 @@ def response(flow):
         print(first_line)
         filename_hash = calcMahimahiHash(first_line[:qotationmark-2])
     
+    PARAMS["OUT_DIRNAME"] = "svr6.shane6.net"
+
     mkdir_p(PARAMS['OUT_DIRNAME'])
-    while True:
-        pathname = os.path.join(PARAMS['OUT_DIRNAME'],str(filename_hash)+'.'+getCode())
-        if not os.path.exists(pathname):
-            break
+
+    #pathname = os.path.join(PARAMS['OUT_DIRNAME'],"raw"+"."+str(filename_hash))
+    #f = open(pathname, "wb")
+    #f.write(reqresp.response.body)
+    #f.close()
+
+
+    pathname = os.path.join(PARAMS['OUT_DIRNAME'],"save"+"."+str(filename_hash))
 
     f = open(pathname, "wb")
     f.write(reqresp.SerializeToString())
@@ -131,11 +150,18 @@ def response(flow):
 
 
 
+
+
 def done():
     """
         Called once on script shutdown, after any other events.
     """
-    mitmproxy.ctx.log("Dump finished ")
+    os.system("pkill tshark")
+    os.system("python3 parse.py")
+    print (ip_set)
+    f = open(os.path.join(PARAMS['OUT_DIRNAME'], "" ), "w" )
+    f.close()
+    print ("Dump finished ")
 
 
 def format_datetime(dt):
