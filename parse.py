@@ -12,6 +12,8 @@ from math import ceil
 from urllib.parse import urlparse
 from random import sample
 
+reached_ip = sys.argv[1].split(",")
+
 pkts = rdpcap('test.pcap')
 
 ip_map = {} # ip: [S, SA]
@@ -53,6 +55,8 @@ def main():
 
     count = -1
     for ip, times in ip_map.items():
+        if ip not in reached_ip:
+            continue
         count += 1
         if len(times) < 2:
             continue

@@ -49,7 +49,7 @@ PARAMS={}
 
 def load(loader):
     print ("Start the Script")
-    os.system("tshark -f \"not port 22\" -w test.pcap&")
+    os.system("tshark -f \"tcp port 443\" -w test.pcap&")
 
 def start():
     """
@@ -132,7 +132,7 @@ def response(flow):
         print(first_line)
         filename_hash = calcMahimahiHash(first_line[:qotationmark-2])
     
-    PARAMS["OUT_DIRNAME"] = "svr6.shane6.net"
+    PARAMS["OUT_DIRNAME"] = "www.wikipedia.org"
 
     mkdir_p(PARAMS['OUT_DIRNAME'])
 
@@ -157,7 +157,7 @@ def done():
         Called once on script shutdown, after any other events.
     """
     os.system("pkill tshark")
-    os.system("python3 parse.py")
+    os.system("python3 parse.py %s" % ",".join(ip_set))
     print (ip_set)
     f = open(os.path.join(PARAMS['OUT_DIRNAME'], "" ), "w" )
     f.close()

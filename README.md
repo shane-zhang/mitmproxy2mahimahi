@@ -29,5 +29,5 @@ mitmdump --no-http2 --ssl-insecure -s mitmproxy2mahimahi.py
 mitmproxy==6.0.0
 
 ```
-browsertime -n 1 --chrome.args proxy-server="127.0.0.1:8080" --chrome.args headless https://svr6.shane6.net
+browsertime -n 1 --chrome.args proxy-server="127.0.0.1:8080" --xvfb --screenshot https://www.epicgames.com
 ```
