@@ -28,6 +28,7 @@ import os
 
 
 ip_set = set()
+file_seq = {'cnt': 0}
 
 def mkdir_p(path):
     try:
@@ -132,7 +133,7 @@ def response(flow):
         print(first_line)
         filename_hash = calcMahimahiHash(first_line[:qotationmark-2])
     
-    PARAMS["OUT_DIRNAME"] = "www.wikipedia.org"
+    PARAMS["OUT_DIRNAME"] = "www.youtube.com"
 
     mkdir_p(PARAMS['OUT_DIRNAME'])
 
@@ -141,8 +142,9 @@ def response(flow):
     #f.write(reqresp.response.body)
     #f.close()
 
+    file_seq['cnt'] += 1
 
-    pathname = os.path.join(PARAMS['OUT_DIRNAME'],"save"+"."+str(filename_hash))
+    pathname = os.path.join(PARAMS['OUT_DIRNAME'],"save"+"."+str(file_seq['cnt']))
 
     f = open(pathname, "wb")
     f.write(reqresp.SerializeToString())
