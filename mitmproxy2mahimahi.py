@@ -26,9 +26,12 @@ from mitmproxy.net.http import status_codes
 
 import os
 
+from collections import defaultdict
 
 ip_set = set()
+ip_rtt = defaultdict(list)
 file_seq = {'cnt': 0}
+
 
 def mkdir_p(path):
     try:
@@ -103,6 +106,8 @@ def response(flow):
     reqresp.request.first_line = first_line
     reqresp.request.body = flow.request.raw_content
 
+    ip_rtt[reqresp.ip].append(flow.server_conn.timestamp_tcp_setup - flow.server_conn.timestamp_start)
+
     for k,v in flow.request.headers.items():
         _hdr = reqresp.request.header.add()
         _hdr.key = bytes(k,'utf-8')
@@ -121,7 +126,14 @@ def response(flow):
         reqresp.response.body = flow.response.raw_content
     else:
         reqresp.response.body = bytes('','utf-8')
+    
+    _hdr = reqresp.response.header.add()
+    _hdr.key = bytes("Content-Length",'utf-8')
+    _hdr.value = bytes(str(len(reqresp.response.body)),'utf-8')
 
+    _hdr = reqresp.response.header.add()
+    _hdr.key = bytes("Seq-File",'utf-8')
+    _hdr.value = bytes(str(file_seq['cnt'] + 1),'utf-8')
 
 
     qotationmark = str(first_line).find('?')
@@ -133,7 +145,7 @@ def response(flow):
         print(first_line)
         filename_hash = calcMahimahiHash(first_line[:qotationmark-2])
     
-    PARAMS["OUT_DIRNAME"] = "www.youtube.com"
+    PARAMS["OUT_DIRNAME"] = "www.example.com"
 
     mkdir_p(PARAMS['OUT_DIRNAME'])
 
@@ -161,8 +173,10 @@ def done():
     os.system("pkill tshark")
     os.system("python3 parse.py %s" % ",".join(ip_set))
     print (ip_set)
-    f = open(os.path.join(PARAMS['OUT_DIRNAME'], "" ), "w" )
-    f.close()
+    os.system("mv traffic.txt "+PARAMS['OUT_DIRNAME']+"/")
+    os.system("mv prolonged_traffic.txt "+PARAMS['OUT_DIRNAME']+"/")
+
+    print (ip_rtt)
     print ("Dump finished ")
 
 
