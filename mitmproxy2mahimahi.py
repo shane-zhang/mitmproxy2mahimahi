@@ -172,11 +172,14 @@ def done():
     """
     os.system("pkill tshark")
     os.system("python3 parse.py %s" % ",".join(ip_set))
-    print (ip_set)
+    #print (ip_set)
     os.system("mv traffic.txt "+PARAMS['OUT_DIRNAME']+"/")
     os.system("mv prolonged_traffic.txt "+PARAMS['OUT_DIRNAME']+"/")
+    os.system("mv test.pcap " +PARAMS['OUT_DIRNAME']+"/")
 
-    print (ip_rtt)
+    #print (ip_rtt)
+    for each_ip in ip_rtt:
+        print (each_ip, min(ip_rtt[each_ip]), sep = "\t")
     print ("Dump finished ")
 
 
