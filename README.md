@@ -13,6 +13,8 @@ Which means installing mitmproxy from pip3, along with other dependencies for mi
 ````
 sudo pip3 install mitmproxy
 sudo apt-get install python3-protobuf python3-tz
+curl -sL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+sudo npm install browsertime
 Then it should run with:
 ```
 
