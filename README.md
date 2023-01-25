@@ -33,3 +33,23 @@ sudo pip3 install mitmproxy==9.0.0
 ```
 browsertime -n 1 --chrome.args proxy-server="127.0.0.1:8080" --xvfb --screenshot https://www.epicgames.com
 ```
+````
+
+
+curl -sL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+
+sudo apt-get install -y python3-protobuf python3-tz python3 python3-pip tshark xvfb nodejs
+
+sudo adduser shanezh wireshark
+
+sudo pip3 install mitmproxy scapy
+
+wget https://svr6.shane6.net/google-chrome-stable_current_amd64.deb --no-check-certificate
+
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+
+sudo apt  --fix-broken install
+
+sudo npm install browsertime -g
+
+git clone https://github.com/shane-zhang/mitmproxy2mahimahi.git
