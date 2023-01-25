@@ -31,6 +31,7 @@ from collections import defaultdict
 ip_set = set()
 ip_rtt = defaultdict(list)
 file_seq = {'cnt': 0}
+data = {}
 
 
 def mkdir_p(path):
@@ -54,6 +55,7 @@ PARAMS={}
 def load(loader):
     print ("Start the Script")
     os.system("tshark -f \"tcp port 443\" -w test.pcap&")
+    data["local_ip"] = os.popen("/sbin/ifconfig eth0 | grep 'inet ' |awk '{print $2}'").read().strip()
 
 def start():
     """
@@ -171,7 +173,7 @@ def done():
         Called once on script shutdown, after any other events.
     """
     os.system("pkill tshark")
-    os.system("python3 parse.py %s" % ",".join(ip_set))
+    os.system("python3 parse.py %s %s" % (",".join(ip_set), data["local_ip"]))
     #print (ip_set)
     os.system("mv traffic.txt "+PARAMS['OUT_DIRNAME']+"/")
     os.system("mv prolonged_traffic.txt "+PARAMS['OUT_DIRNAME']+"/")
