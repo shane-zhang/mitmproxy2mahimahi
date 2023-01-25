@@ -40,13 +40,13 @@ curl -sL https://deb.nodesource.com/setup_current.x | sudo -E bash -
 
 sudo apt-get install -y python3-protobuf python3-tz python3 python3-pip tshark xvfb nodejs
 
-sudo adduser shanezh wireshark
+sudo adduser $(whoami) wireshark
 
 sudo pip3 install mitmproxy scapy
 
 wget https://svr6.shane6.net/google-chrome-stable_current_amd64.deb --no-check-certificate
 
-sudo dpkg -i google-chrome-stable_current_amd64.deb
+sudo apt install google-chrome-stable_current_amd64.deb
 
 sudo apt  --fix-broken install
 
