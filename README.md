@@ -46,9 +46,7 @@ sudo pip3 install mitmproxy scapy
 
 wget https://svr6.shane6.net/google-chrome-stable_current_amd64.deb --no-check-certificate
 
-sudo apt install google-chrome-stable_current_amd64.deb
-
-sudo apt  --fix-broken install
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
 
 sudo npm install browsertime -g
 
